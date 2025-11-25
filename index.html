@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DKU OSS Project - Infrastructure</title>
+    <!-- 아이콘 사용을 위한 FontAwesome CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #364fde;
+            --success-color: #10B981;
+            --error-color: #EF4444;
+            --bg-gradient: linear-gradient(135deg, #667eea 0%, #151db5 100%);
+            --card-bg: rgba(255, 255, 255, 0.95);
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+
+        .dashboard-card {
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 480px;
+            text-align: center;
+        }
+
+        h1 { margin: 0 0 10px 0; color: #1F2937; }
+        p.subtitle { margin: 0 0 30px 0; color: #6B7280; font-size: 0.95rem; }
+
+        /* 상태 리스트 스타일 */
+        .status-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 30px 0;
+            text-align: left;
+        }
+
+        .status-item {
+            background: #F3F4F6;
+            margin-bottom: 12px;
+            padding: 15px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+        }
+
+        .badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            font-weight: 800;
+        }
+
+        .badge.online { background: #D1FAE5; color: var(--success-color); }
+        .badge.offline { background: #FEE2E2; color: var(--error-color); }
+        .badge.waiting { background: #E0E7FF; color: var(--primary-color); }
+
+        /* 버튼 스타일 */
+        .btn-check {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-check:hover { background: #4338CA; transform: translateY(-2px); }
+        .btn-check:active { transform: scale(0.98); }
+
+        .log-area {
+            margin-top: 20px;
+            font-size: 0.85rem;
+            color: #6B7280;
+            min-height: 20px;
+        }
+
+        /* 아이콘 색상 */
+        .icon-react { color: #61DAFB; }
+        .icon-db { color: #336791; }
+        .icon-api { color: #FFD43B; }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-card">
+        <i class="fa-solid fa-server fa-3x" style="color: var(--primary-color); margin-bottom: 15px;"></i>
+        <h1>System Status</h1>
+        <p class="subtitle">Infrastructure Connection Check</p>
+
+        <ul class="status-list">
+            <!-- 1. 프론트엔드 상태 -->
+            <li class="status-item">
+                <span><i class="fa-brands fa-react icon-react"></i> Frontend</span>
+                <span class="badge online">Running</span>
+            </li>
+            
+            <!-- 2. DB 상태 (인프라가 보장하므로 Mounted 표시) -->
+            <li class="status-item">
+                <span><i class="fa-solid fa-database icon-db"></i> Database</span>
+                <span class="badge online">Mounted</span>
+            </li>
+
+            <!-- 3. 백엔드 상태 (통신 테스트 대상) -->
+            <li class="status-item">
+                <span><i class="fa-brands fa-python icon-api"></i> Backend API</span>
+                <span id="api-badge" class="badge waiting">Waiting</span>
+            </li>
+        </ul>
+
+        <button class="btn-check" onclick="checkConnection()">
+            <i class="fa-solid fa-rotate"></i> Check Connection
+        </button>
+
+        <div id="log-msg" class="log-area">Click button to test API...</div>
+    </div>
+
+    <script>
+        // ▼▼▼ 로컬 테스트용 백엔드 주소 (필요시 수정) ▼▼▼
+        // 로컬 실행 시: http://127.0.0.1:8000
+        // 쿠버네티스 포트포워딩 시: http://localhost:8000
+        const BACKEND_URL = "http://localhost:8000";
+
+        async function checkConnection() {
+            const badge = document.getElementById('api-badge');
+            const log = document.getElementById('log-msg');
+            const btn = document.querySelector('.btn-check');
+
+            // 상태 초기화
+            badge.className = 'badge waiting';
+            badge.innerText = 'Checking...';
+            log.style.color = '#6B7280';
+            log.innerText = `Connecting to ${BACKEND_URL}...`;
+            
+            // 버튼 로딩 효과
+            const originalBtnText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Testing...';
+            btn.disabled = true;
+
+            try {
+                // 실제 API 호출 (root 경로 '/')
+                const response = await fetch(BACKEND_URL, { 
+                    method: 'GET',
+                    // CORS 에러 방지를 위해 명시
+                    mode: 'cors' 
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    // 성공 시
+                    badge.className = 'badge online';
+                    badge.innerText = 'Online';
+                    log.style.color = 'var(--success-color)';
+                    log.innerText = `Success: "${data.message}"`;
+                } else {
+                    throw new Error('Server Error');
+                }
+            } catch (error) {
+                // 실패 시
+                console.error(error);
+                badge.className = 'badge offline';
+                badge.innerText = 'Offline';
+                log.style.color = 'var(--error-color)';
+                log.innerText = "Connection Failed. Is Backend Running?";
+            } finally {
+                // 버튼 복구
+                btn.innerHTML = originalBtnText;
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
