@@ -139,10 +139,8 @@
     </div>
 
     <script>
-        // ▼▼▼ 로컬 테스트용 백엔드 주소 (필요시 수정) ▼▼▼
-        // 로컬 실행 시: http://127.0.0.1:8000
-        // 쿠버네티스 포트포워딩 시: http://localhost:8000
-        const BACKEND_URL = "http://localhost:8000";
+        // ▼▼▼ 로컬 테스트용 백엔드 주소 (필요시 수정) - 상대 경로▼▼▼
+        const BACKEND_URL = "/api";
 
         async function checkConnection() {
             const badge = document.getElementById('api-badge');
