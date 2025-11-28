@@ -1,4 +1,4 @@
-# 🚀 Frontend × Backend API Integration (React + FastAPI)
+# 🚀 Frontend × Backend API Integration (React + FastAPI) (수정예정)
 
 React 프론트엔드와 FastAPI 백엔드를 연동하여  
 **문서 업로드 → Claude 요약 → 요약 결과 렌더링**
