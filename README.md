@@ -79,6 +79,7 @@ React 프론트엔드와 FastAPI 백엔드를 연동하여
 ```
 - 또는 브랜치에서 .zip 파일로 다운로드 후 실행
 
+---
 
 ## 🏁 실행 후 브라우저에서 확인:
 
@@ -89,8 +90,9 @@ React 프론트엔드와 FastAPI 백엔드를 연동하여
 ⚠️ 프론트엔드는 백엔드 API를 호출하므로
 반드시 백엔드 서버도 실행 중이어야 정상 동작.
 
+---
 
-## 🚩 설치 과정 화면
+## 📄 설치 과정 화면
    <img width="1574" height="472" alt="image" src="https://github.com/user-attachments/assets/aec8087b-8de3-4623-8183-d4c9f4a02d57" />
    <img width="463" height="286" alt="image" src="https://github.com/user-attachments/assets/8fc8a5dd-8359-4e1b-982e-968d64e96ea5" />
 
