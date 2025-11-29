@@ -65,4 +65,34 @@ React 프론트엔드와 FastAPI 백엔드를 연동하여
 4. 요약 결과를 DB에 저장
 5. /summary 페이지로 이동하여 요약 결과 표시
 
+---
+
+## 🚀 설치방법 
+---
+(명령프롬프트에서)
+### 1. git clone --branch feature/front-back-api-connect --single-branch https://github.com/DKU-OSS-development/Frontend.git  
+- 특정 브랜치만 실행
+### 2. cd Frontend
+### 3. npm install
+- node_modules는 GitHub에 업로드되지 않기 때문에 clone 후 반드시 npm install을 실행해야 합니다.
+### 4. npm run dev
+Vite 개발 서버가 실행됩니다.
+
+실행 후 브라우저에서 확인:
+
+프론트엔드: http://localhost:5173/
+
+백엔드(API 서버): http://localhost:8000
+
+⚠️ 프론트엔드는 백엔드 API를 호출하므로
+반드시 백엔드 서버도 실행 중이어야 정상 동작합니다.
+
+
+## 설치화면
+   <img width="1574" height="472" alt="image" src="https://github.com/user-attachments/assets/aec8087b-8de3-4623-8183-d4c9f4a02d57" />
+   <img width="463" height="286" alt="image" src="https://github.com/user-attachments/assets/8fc8a5dd-8359-4e1b-982e-968d64e96ea5" />
+
+
+
+
 
