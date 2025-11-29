@@ -69,16 +69,18 @@ React 프론트엔드와 FastAPI 백엔드를 연동하여
 
 ## 🚀 설치방법 
 ---
-(명령프롬프트에서)
-### 1. git clone --branch feature/front-back-api-connect --single-branch https://github.com/DKU-OSS-development/Frontend.git  
-- 특정 브랜치만 실행
-### 2. cd Frontend
-### 3. npm install
-- node_modules는 GitHub에 업로드되지 않기 때문에 clone 후 반드시 npm install을 실행해야 합니다.
-### 4. npm run dev
-Vite 개발 서버가 실행됩니다.
+- (명령프롬프트 or VSCode에서)
 
-실행 후 브라우저에서 확인:
+```
+1. git clone --branch feature/front-back-api-connect --single-branch https://github.com/DKU-OSS-development/Frontend.git  
+2. cd Frontend
+3. npm install
+4. npm run dev
+```
+- 또는 브랜치에서 .zip 파일로 다운로드
+
+
+## 실행 후 브라우저에서 확인:
 
 프론트엔드: http://localhost:5173/
 
