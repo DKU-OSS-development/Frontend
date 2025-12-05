@@ -1,0 +1,109 @@
+/* 전체 페이지 배경 */
+.login-page {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: #0f172a; /* 남색 배경 */
+}
+
+/* 가운데 카드 박스 */
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 32px 28px;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.35);
+}
+
+/* 제목 */
+.login-title {
+  font-size: 24px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+/* 폼 레이아웃 */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* 인풋 그룹 */
+.login-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* 라벨 텍스트 */
+.login-input-label {
+  font-size: 14px;
+  color: #4b5563;
+}
+
+/* 인풋 스타일 */
+.login-input {
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  padding: 10px 12px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.login-input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.25);
+}
+
+/* 버튼 영역 */
+.login-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+/* 공통 버튼 스타일 */
+.btn {
+  width: 100%;
+  padding: 10px 0;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+}
+
+/* 주요 버튼 (로그인) */
+.btn-primary {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: #1d4ed8;
+}
+
+/* 서브 버튼 (회원가입) */
+.btn-secondary {
+  background-color: #e5e7eb;
+  color: #111827;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background-color: #d1d5db;
+}
+
+/* 비활성화 상태 */
+.btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}

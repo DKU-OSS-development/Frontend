@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import BackButton from "../components/BackButton";
+import "./PageLayout.css"; // 공통 레이아웃 css 추가
 
 const API_BASE_URL = "/api";
 
@@ -114,117 +115,99 @@ export default function ProjectDetailPage() {
   };
 
   return (
-    <div style={styles.page}>
-      <div style={styles.container}>
-        <header style={styles.header}>
+    <div className="page">
+      {/* 상단 헤더 */}
+      <header className="page-header">
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <BackButton />
-          <button style={styles.logoutButton} onClick={handleLogout}>
+          <div>
+            <div className="page-title">프로젝트 상세</div>
+            <div className="page-subtitle">
+              ID: {id} · 요약할 텍스트 또는 파일을 업로드하세요.
+            </div>
+          </div>
+        </div>
+
+        <div className="page-actions">
+          <button className="btn btn-ghost" onClick={handleLogout}>
             로그아웃
           </button>
-        </header>
+        </div>
+      </header>
 
-        <h2 style={styles.title}>프로젝트 페이지</h2>
+      {/* 본문 */}
+      <main className="page-body">
+        {/* 텍스트 입력 카드 */}
+        <section className="card">
+          <div className="card-title">텍스트 입력</div>
+          <div className="card-subtitle">
+            바로 붙여넣을 수 있는 문서라면 여기에 텍스트로 입력해도 된다.
+          </div>
 
-        {/* 텍스트 입력 */}
-        <div style={styles.section}>
-          <h3 style={styles.sectionTitle}>텍스트 입력</h3>
           <textarea
             style={styles.textarea}
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder="여기에 요약할 텍스트를 입력하세요."
           />
-        </div>
+        </section>
 
-        {/* 파일 업로드 */}
-        <div style={styles.section}>
-          <h3 style={styles.sectionTitle}>파일 업로드 (PDF / TXT / DOCX)</h3>
-          <input
-            type="file"
-            accept=".pdf,.txt,.doc,.docx"
-            onChange={handleFileChange}
-          />
-          {file && <div style={styles.fileInfo}>선택된 파일: {file.name}</div>}
-        </div>
+        {/* 파일 업로드 카드 */}
+        <section className="card">
+          <div className="card-title">파일 업로드 (PDF / TXT / DOCX)</div>
+          <div className="card-subtitle">
+            업로드한 파일은 요약 생성에만 사용된다.
+          </div>
 
-        <button
-          style={styles.submitButton}
-          onClick={handleSubmit}
-          disabled={isLoading}
-        >
-          {isLoading ? "요약 중..." : "요약 요청하기"}
-        </button>
-      </div>
+          <div style={styles.section}>
+            <input
+              type="file"
+              accept=".pdf,.txt,.doc,.docx"
+              onChange={handleFileChange}
+            />
+            {file && (
+              <div style={styles.fileInfo}>선택된 파일: {file.name}</div>
+            )}
+          </div>
+
+          <button
+            className="btn btn-primary"
+            onClick={handleSubmit}
+            disabled={isLoading}
+          >
+            {isLoading ? "요약 중..." : "요약 요청하기"}
+          </button>
+        </section>
+      </main>
     </div>
   );
 }
 
 const styles = {
-  page: {
-    width: "100vw",
-    minHeight: "100vh",
-    display: "flex",
-    justifyContent: "center",
-    paddingTop: 30,
-    boxSizing: "border-box",
-  },
-
-  container: {
-    width: "700px",
-    display: "flex",
-    flexDirection: "column",
-    gap: 20,
-  },
-
-  header: {
+  textarea: {
     width: "100%",
-    display: "flex",
-    justifyContent: "space-between",
-    marginBottom: 4,
-  },
-
-  logoutButton: {
-    padding: "6px 12px",
-    cursor: "pointer",
-  },
-
-  title: {
-    margin: "0 0 10px 0",
-  },
-
-  sectionTitle: {
-    margin: "0 0 6px 0",
+    minHeight: 160,
+    marginTop: 12,
+    padding: 10,
+    boxSizing: "border-box",
+    borderRadius: 8,
+    border: "1px solid #1f2937",
+    background: "#020617",
+    color: "#e5e7eb",
+    fontSize: 14,
+    resize: "vertical",
   },
 
   section: {
     display: "flex",
     flexDirection: "column",
     gap: 6,
+    marginTop: 12,
     marginBottom: 12,
   },
 
-  textarea: {
-    width: "100%",
-    minHeight: 160,
-    padding: 10,
-    boxSizing: "border-box",
-    borderRadius: 4,
-    border: "1px solid #555",
-    background: "#2b2b2b",
-    color: "#ddd",
-    fontSize: 14,
-  },
-
   fileInfo: {
-    marginTop: 4,
     fontSize: 13,
-    color: "#aaa",
-  },
-
-  submitButton: {
-    padding: "10px 14px",
-    cursor: "pointer",
-    width: "150px",
-    marginTop: 6,
+    color: "#9ca3af",
   },
 };

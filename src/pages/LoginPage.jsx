@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import "./LoginPage.css"; // ← CSS 파일 추가
 
 const API_BASE_URL = "/api"; // 백엔드 주소 
 
@@ -77,69 +78,58 @@ export default function LoginPage() {
   };
 
   return (
-    <div style={styles.page}>
-      <h2 style={{ marginBottom: 24 }}>Claude AI 기반 문서요약 서비스</h2> 
+    <div className="login-page">
+      <div className="login-card">
+        <h1 className="login-title">Claude AI 기반 문서요약 서비스</h1>
 
-      <div style={styles.inputBox}>
-        <input
-          type="email"
-          placeholder="이메일"
-          style={styles.input}
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+        <form
+          className="login-form"
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleLogin();
+          }}
+        >
+          <div className="login-input-group">
+            <label className="login-input-label">이메일</label>
+            <input
+              type="email"
+              placeholder="이메일을 입력하세요"
+              className="login-input"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+
+          <div className="login-input-group">
+            <label className="login-input-label">비밀번호</label>
+            <input
+              type="password"
+              placeholder="비밀번호를 입력하세요"
+              className="login-input"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+
+          <div className="login-actions">
+            <button
+              type="submit"
+              className="btn btn-primary"
+              disabled={isLoading}
+            >
+              {isLoading ? "처리 중..." : "로그인"}
+            </button>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={handleSignup}
+              disabled={isLoading}
+            >
+              회원가입
+            </button>
+          </div>
+        </form>
       </div>
-
-      <div style={styles.inputBox}>
-        <input
-          type="password"
-          placeholder="비밀번호"
-          style={styles.input}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-      </div>
-
-      <button style={styles.button} onClick={handleLogin} disabled={isLoading}>
-        {isLoading ? "처리 중..." : "로그인"}
-      </button>
-      <button
-        style={styles.button}
-        onClick={handleSignup}
-        disabled={isLoading}
-      >
-        회원가입
-      </button>
     </div>
   );
 }
-
-const styles = {
-  page: {
-    height: "100vh",
-    width: "100%",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 12,
-  },
-  inputBox: {
-    width: 260,
-  },
-  input: {
-    width: "100%",
-    padding: "8px 10px",
-    boxSizing: "border-box",
-  },
-  button: {
-  width: 260,
-  padding: "12px 0",
-  border: "1px solid #ccc",
-  background: "#fff",
-  color: "#000",    
-  cursor: "pointer",
-  fontWeight: "bold",
-  borderRadius: "8px",
-}
-};

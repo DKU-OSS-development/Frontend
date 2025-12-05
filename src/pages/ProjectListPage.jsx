@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BackButton from "../components/BackButton";
+import "./PageLayout.css";   // 공통 레이아웃 적용
 
 const API_BASE_URL = "/api";
 
@@ -53,7 +54,6 @@ export default function ProjectListPage() {
     fetchProjects();
   }, [navigate]);
 
-
   const handleCreateProject = async () => {
     const name = window.prompt("새 프로젝트 이름을 입력하세요.");
     if (!name) return;
@@ -96,7 +96,6 @@ export default function ProjectListPage() {
     }
   };
 
-
   const handleOpenProject = (id) => {
     navigate(`/projects/${id}`);
   };
@@ -106,95 +105,84 @@ export default function ProjectListPage() {
     navigate("/");
   };
 
-
   return (
-    <div style={styles.page}>
-      <div style={styles.container}>
-
-        
-        <header style={styles.header}>
+    <div className="page">
+      {/* 상단 헤더 */}
+      <header className="page-header">
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <BackButton />
-          <button style={styles.logoutButton} onClick={handleLogout}>
+          <div>
+            <div className="page-title">프로젝트 선택</div>
+            <div className="page-subtitle">
+              요약을 진행할 프로젝트를 선택하거나 새로 생성할 수 있다.
+            </div>
+          </div>
+        </div>
+
+        <div className="page-actions">
+          <button className="btn btn-ghost" onClick={handleLogout}>
             로그아웃
           </button>
-        </header>
+        </div>
+      </header>
 
-        <h2 style={styles.title}>프로젝트 선택 페이지</h2>
-
-        <button
-          style={styles.createButton}
-          onClick={handleCreateProject}
-          disabled={isLoading}
-        >
-          {isLoading ? "처리 중..." : "새 프로젝트 만들기"}
-        </button>
-
-        <ul style={styles.list}>
-          {projects.map((project) => (
-            <li
-              key={project.id}
-              style={styles.item}
-              onClick={() => handleOpenProject(project.id)}
+      {/* 본문 */}
+      <main className="page-body">
+        <section className="card">
+          {/* 제목 + 새 프로젝트 버튼 줄 */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: 16,
+            }}
+          >
+            <h2 style={{ margin: 0 }}>프로젝트 선택 페이지</h2>
+            <button
+              className="btn btn-primary"
+              onClick={handleCreateProject}
+              disabled={isLoading}
             >
-              <div style={styles.name}>{project.name}</div>
-              <div style={styles.meta}>
-                생성 날짜: {project.createdAt?.toString().slice(0, 10)}
-              </div>
-              {/*<div style={styles.meta}>
-                마지막 접근 날짜: {project.lastAccessedAt
-                  ?.toString()
-                  .slice(0, 10)}
-              </div>*/} {/* 마지막접근 날짜 갱신이 안 되서 공부해보니 백엔드도 건드려야한다고 해서
-                일단은 주석처리하였습니다.*/ }
-            </li>
-          ))}
+              {isLoading ? "처리 중..." : "새 프로젝트 만들기"}
+            </button>
+          </div>
 
-          {!isLoading && projects.length === 0 && (
-            <li style={styles.meta}>프로젝트가 없습니다. 새로 만들어보세요!</li>
-          )}
-        </ul>
-      </div>
+          {/* 프로젝트 리스트 */}
+          <ul style={styles.list}>
+            {projects.map((project) => (
+              <li
+                key={project.id}
+                style={styles.item}
+                onClick={() => handleOpenProject(project.id)}
+              >
+                <div style={styles.name}>{project.name}</div>
+                <div style={styles.meta}>
+                  생성 날짜: {project.createdAt?.toString().slice(0, 10)}
+                </div>
+                {/* 
+                <div style={styles.meta}>
+                  마지막 접근 날짜: {project.lastAccessedAt
+                    ?.toString()
+                    .slice(0, 10)}
+                </div>
+                */}
+              </li>
+            ))}
+
+            {!isLoading && projects.length === 0 && (
+              <li style={styles.meta}>
+                프로젝트가 없습니다. 새로 만들어보세요!
+              </li>
+            )}
+          </ul>
+        </section>
+      </main>
     </div>
   );
 }
 
 const styles = {
-  page: {
-    width: "100vw",
-    height: "100vh",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "flex-start",
-    paddingTop: 40,
-  },
-
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    width: "700px",
-  },
-
-  header: {
-    display: "flex",
-    justifyContent: "space-between",
-    marginBottom: 20,
-  },
-
-  logoutButton: {
-    padding: "6px 12px",
-    cursor: "pointer",
-  },
-
-  title: {
-    marginBottom: 12,
-  },
-
-  createButton: {
-    padding: "8px 12px",
-    marginBottom: 16,
-    cursor: "pointer",
-  },
-
   list: {
     listStyle: "none",
     padding: 0,
@@ -205,19 +193,22 @@ const styles = {
   },
 
   item: {
-    border: "1px solid #aaa",
+    border: "1px solid #1f2937",
     padding: 16,
     cursor: "pointer",
-    borderRadius: 4,
+    borderRadius: 8,
+    backgroundColor: "#020617",
+    transition: "background-color 0.15s ease, border-color 0.15s ease",
   },
 
   name: {
     fontWeight: "bold",
     marginBottom: 4,
+    color: "#e5e7eb",
   },
 
   meta: {
     fontSize: 12,
-    color: "#ccc",
+    color: "#9ca3af",
   },
 };
