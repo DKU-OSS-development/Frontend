@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BackButton from "../components/BackButton";
-import "./PageLayout.css";   // 공통 레이아웃 적용
+import "./PageLayout.css";
 
 const API_BASE_URL = "/api";
 
@@ -105,6 +105,26 @@ export default function ProjectListPage() {
     navigate("/");
   };
 
+
+  const handleDelete = async (projectId) => { // ✅ async 키워드 추가
+  if (window.confirm("정말로 삭제하시겠습니까?")) {
+    try {
+      await fetch(`/api/projects/${projectId}?token=${encodeURIComponent(localStorage.getItem("oss_token"))}`, { method: 'DELETE' });
+      
+      // 프런트엔드 상태를 갱신하여 삭제된 프로젝트를 목록에서 제거
+      setProjects((prevProjects) => 
+        prevProjects.filter((project) => project.id !== projectId)
+      );
+      
+      alert("삭제되었습니다.");
+      
+    } catch (error) {
+      console.error("프로젝트 삭제 오류:", error);
+      alert("삭제 중 오류가 발생했습니다. 다시 시도해 주세요.");
+    }
+  }
+};
+
   return (
     <div className="page">
       {/* 상단 헤더 */}
@@ -114,13 +134,13 @@ export default function ProjectListPage() {
           <div>
             <div className="page-title">프로젝트 선택</div>
             <div className="page-subtitle">
-              요약을 진행할 프로젝트를 선택하거나 새로 생성할 수 있다.
+              요약을 진행할 프로젝트를 선택하거나 새로 생성할 수 있습니다.
             </div>
           </div>
         </div>
 
         <div className="page-actions">
-          <button className="btn btn-ghost" onClick={handleLogout}>
+          <button className="btn btn-ghost btn-sm" onClick={handleLogout}>
             로그아웃
           </button>
         </div>
@@ -138,13 +158,15 @@ export default function ProjectListPage() {
               marginBottom: 16,
             }}
           >
-            <h2 style={{ margin: 0 }}>프로젝트 선택 페이지</h2>
+            <h2 style={{ margin: 0, fontSize: 20, fontWeight: 600 }}>
+              프로젝트 목록
+            </h2>
             <button
-              className="btn btn-primary"
+              className="btn btn-primary btn-md btn-fixed-width"
               onClick={handleCreateProject}
               disabled={isLoading}
             >
-              {isLoading ? "처리 중..." : "새 프로젝트 만들기"}
+              {isLoading ? "처리 중..." : "+ 새 프로젝트 만들기"}
             </button>
           </div>
 
@@ -153,28 +175,36 @@ export default function ProjectListPage() {
             {projects.map((project) => (
               <li
                 key={project.id}
-                style={styles.item}
+    
+                style={{ 
+                 ...styles.item, 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center', 
+                
+          }}
                 onClick={() => handleOpenProject(project.id)}
-              >
-                <div style={styles.name}>{project.name}</div>
-                <div style={styles.meta}>
-                  생성 날짜: {project.createdAt?.toString().slice(0, 10)}
-                </div>
-                {/* 
-                <div style={styles.meta}>
-                  마지막 접근 날짜: {project.lastAccessedAt
-                    ?.toString()
-                    .slice(0, 10)}
-                </div>
-                */}
-              </li>
-            ))}
+  >
+          {/* 1. 왼쪽: 프로젝트 정보 (이름, 날짜)를 div로 묶어줍니다 */}
+          <div>
+            <div style={styles.name}>{project.name}</div>
+            <div style={styles.meta}>
+            생성 날짜: {project.createdAt?.toString().slice(0, 10)}
+      </div>
+    </div>
 
-            {!isLoading && projects.length === 0 && (
-              <li style={styles.meta}>
-                프로젝트가 없습니다. 새로 만들어보세요!
-              </li>
-            )}
+    {/* 2. 오른쪽: 삭제 버튼 추가 */}
+    <button
+      className="btn btn-danger btn-sm" // 아까 CSS에 추가한 빨간 버튼 클래스
+      onClick={(e) => {
+        e.stopPropagation(); // 👈 중요! 이게 없으면 삭제 누를 때 페이지도 같이 이동해버립니다.
+        handleDelete(project.id);
+      }}
+    >
+      삭제
+    </button>
+  </li>
+))}
           </ul>
         </section>
       </main>
@@ -198,17 +228,25 @@ const styles = {
     cursor: "pointer",
     borderRadius: 8,
     backgroundColor: "#020617",
-    transition: "background-color 0.15s ease, border-color 0.15s ease",
+    transition: "all 0.2s ease",
   },
 
   name: {
-    fontWeight: "bold",
+    fontWeight: 600,
     marginBottom: 4,
     color: "#e5e7eb",
+    fontSize: 15,
   },
 
   meta: {
-    fontSize: 12,
+    fontSize: 13,
     color: "#9ca3af",
+  },
+
+  emptyState: {
+    fontSize: 14,
+    color: "#6b7280",
+    textAlign: "center",
+    padding: "40px 0",
   },
 };

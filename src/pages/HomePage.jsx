@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BackButton from "../components/BackButton";
-import "./PageLayout.css";   // ✅ 공통 레이아웃 CSS
+import "./PageLayout.css";
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -45,7 +45,7 @@ export default function HomePage() {
         </div>
 
         <div className="page-actions">
-          <button className="btn btn-ghost" onClick={handleLogout}>
+          <button className="btn btn-ghost btn-sm" onClick={handleLogout}>
             로그아웃
           </button>
         </div>
@@ -68,9 +68,14 @@ export default function HomePage() {
             Claude AI가 핵심 요약을 제공합니다.
           </p>
 
-          <button className="btn btn-primary" onClick={handleGoProjects}>
-            프로젝트 목록 보기
-          </button>
+          <div className="flex-center" style={{ marginTop: '24px' }}>
+            <button 
+              className="btn btn-primary btn-lg"
+              onClick={() => navigate('/projects')}
+      >
+              프로젝트 목록 보기
+            </button>
+          </div>
         </section>
       </main>
     </div>

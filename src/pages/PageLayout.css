@@ -1,8 +1,8 @@
 :root {
-  --primary: #4f46e5;
+  --primary: #0841ea;
   --primary-soft: #eef2ff;
   --bg: #0f172a;
-  --card-bg: #111827;
+  --card-bg: #1e293b;
   --border-subtle: #1f2937;
   --text-main: #f9fafb;
   --text-sub: #9ca3af;
@@ -41,7 +41,7 @@
   gap: 8px;
 }
 
-/*  공통 버튼 */
+/* 공통 버튼 */
 .btn {
   border-radius: 999px;
   font-size: 13px;
@@ -49,6 +49,34 @@
   border: 1px solid transparent;
   cursor: pointer;
   transition: all 0.15s ease-in-out;
+}
+
+/* 버튼 크기 변형 */
+.btn-sm {
+  padding: 6px 14px;
+  font-size: 12px;
+}
+
+.btn-fixed-width {
+  min-width: 180px;
+  width: auto;
+}
+
+.btn-md {
+  padding: 10px 20px;
+  font-size: 14px;
+}
+
+.btn-lg {
+  padding: 7px 14px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* 전체 너비 버튼 */
+.btn-block {
+  width: 50%;
+  display: block;
 }
 
 .btn-primary {
@@ -66,9 +94,21 @@
   color: var(--text-sub);
   border-color: var(--border-subtle);
 }
+
 .btn-ghost:hover {
   border-color: var(--primary);
   color: var(--text-main);
+}
+
+/* 버튼 그룹 */
+.btn-group {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.btn-group .btn {
+  flex: 1;
 }
 
 /* 본문 영역 */
@@ -160,13 +200,41 @@
 }
 
 .file-type-pdf {
-  color: red;
+  color: #ef4444;
 }
 
 .file-type-txt {
-  color: dodgerblue;
+  color: #3b82f6;
 }
 
 .file-type-docx {
-  color: green;
+  color: #10b981;
+}
+
+/* 중앙 정렬 컨테이너 */
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.flex-center .btn {
+  width: 300px; 
+  max-width: 100%;
+}
+
+/* 삭제용 빨간 버튼 */
+.btn-danger {
+  background: rgba(239, 68, 68, 0.2); 
+  color: #ef4444; 
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  width: auto;
+}
+
+.btn-danger:hover {
+  background: #ef4444; /* 마우스 올리면 진한 빨강 */
+  color: white;
+  border-color: #ef4444;
 }

@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import BackButton from "../components/BackButton";
-import "./PageLayout.css"; // 공통 레이아웃 css 추가
+import "./PageLayout.css";
 
 const API_BASE_URL = "/api";
 
@@ -32,7 +32,6 @@ export default function ProjectDetailPage() {
   };
 
   const handleSubmit = async () => {
-    // trim()으로 공백만 있는 경우도 체크
     if (!text.trim() && !file) {
       alert("텍스트를 입력하거나 파일을 업로드해주세요.");
       return;
@@ -48,18 +47,9 @@ export default function ProjectDetailPage() {
     try {
       setIsLoading(true);
 
-      // 디버깅: token 확인
-      console.log("Token:", token);
-      if (!token) {
-        alert("토큰이 없습니다. 다시 로그인해주세요.");
-        navigate("/");
-        return;
-      }
-
       const formData = new FormData();
       formData.append("token", token);
       
-      // text가 빈 문자열이어도 명시적으로 추가
       if (text.trim()) {
         formData.append("text", text);
       }
@@ -67,16 +57,6 @@ export default function ProjectDetailPage() {
       if (file) {
         formData.append("file", file);
       }
-
-      // 디버깅: FormData 내용 확인
-      console.log("=== FormData 내용 ===");
-      console.log("token:", token);
-      console.log("text:", text);
-      console.log("file:", file);
-      for (let [key, value] of formData.entries()) {
-        console.log(`${key}:`, value);
-      }
-      console.log("===================");
 
       const res = await fetch(
         `${API_BASE_URL}/projects/${id}/summarize`, 
@@ -89,7 +69,6 @@ export default function ProjectDetailPage() {
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         alert(`요약 요청 실패: ${data.detail || res.statusText}`);
-        console.error("Error details:", data);
         return;
       }
 
@@ -123,13 +102,13 @@ export default function ProjectDetailPage() {
           <div>
             <div className="page-title">프로젝트 상세</div>
             <div className="page-subtitle">
-              ID: {id} · 요약할 텍스트 또는 파일을 업로드하세요.
+              요약할 텍스트 또는 파일을 업로드하세요
             </div>
           </div>
         </div>
 
         <div className="page-actions">
-          <button className="btn btn-ghost" onClick={handleLogout}>
+          <button className="btn btn-ghost btn-sm" onClick={handleLogout}>
             로그아웃
           </button>
         </div>
@@ -139,44 +118,57 @@ export default function ProjectDetailPage() {
       <main className="page-body">
         {/* 텍스트 입력 카드 */}
         <section className="card">
-          <div className="card-title">텍스트 입력</div>
+          <div className="card-title">📝 텍스트 입력</div>
           <div className="card-subtitle">
-            바로 붙여넣을 수 있는 문서라면 여기에 텍스트로 입력해도 된다.
+            바로 붙여넣을 수 있는 문서라면 여기에 텍스트로 입력하세요
           </div>
 
           <textarea
             style={styles.textarea}
             value={text}
             onChange={(e) => setText(e.target.value)}
-            placeholder="여기에 요약할 텍스트를 입력하세요."
+            placeholder="여기에 요약할 텍스트를 입력하세요..."
           />
         </section>
 
         {/* 파일 업로드 카드 */}
         <section className="card">
-          <div className="card-title">파일 업로드 (PDF / TXT / DOCX)</div>
+          <div className="card-title">📎 파일 업로드</div>
           <div className="card-subtitle">
-            업로드한 파일은 요약 생성에만 사용된다.
+            PDF, TXT, DOCX 파일을 업로드하세요
           </div>
 
-          <div style={styles.section}>
+          <div style={styles.fileSection}>
+            <label htmlFor="file-input" style={styles.fileLabel}>
+              <span style={styles.fileLabelIcon}>📁</span>
+              {file ? file.name : "파일 선택"}
+            </label>
             <input
+              id="file-input"
               type="file"
               accept=".pdf,.txt,.doc,.docx"
               onChange={handleFileChange}
+              style={styles.fileInput}
             />
             {file && (
-              <div style={styles.fileInfo}>선택된 파일: {file.name}</div>
+              <button
+                onClick={() => setFile(null)}
+                style={styles.clearButton}
+              >
+                ✕ 취소
+              </button>
             )}
           </div>
-
+             <div className="flex-center" style={{ marginTop: '30px' }}>
           <button
-            className="btn btn-primary"
+            className="btn btn-primary btn-lg btn-block"
             onClick={handleSubmit}
             disabled={isLoading}
+            style={{ marginTop: 16 }}
           >
-            {isLoading ? "요약 중..." : "요약 요청하기"}
+            {isLoading ? "⏳ 요약 중..." : "✨ 요약 요청하기"}
           </button>
+          </div>
         </section>
       </main>
     </div>
@@ -188,26 +180,58 @@ const styles = {
     width: "100%",
     minHeight: 160,
     marginTop: 12,
-    padding: 10,
+    padding: 12,
     boxSizing: "border-box",
     borderRadius: 8,
     border: "1px solid #1f2937",
     background: "#020617",
     color: "#e5e7eb",
     fontSize: 14,
+    lineHeight: 1.6,
     resize: "vertical",
+    fontFamily: "inherit",
   },
 
-  section: {
+  fileSection: {
     display: "flex",
-    flexDirection: "column",
-    gap: 6,
+    gap: 8,
     marginTop: 12,
-    marginBottom: 12,
+    alignItems: "center",
   },
 
-  fileInfo: {
-    fontSize: 13,
+  fileInput: {
+    display: "none",
+  },
+
+  fileLabel: {
+    flex: 1,
+    padding: "10px 16px",
+    border: "2px dashed #374151",
+    borderRadius: 8,
+    cursor: "pointer",
+    textAlign: "center",
+    fontSize: 14,
     color: "#9ca3af",
+    background: "#020617",
+    transition: "all 0.2s ease",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+  },
+
+  fileLabelIcon: {
+    fontSize: 18,
+  },
+
+  clearButton: {
+    padding: "8px 16px",
+    border: "1px solid #374151",
+    borderRadius: 8,
+    background: "#1f2937",
+    color: "#ef4444",
+    fontSize: 13,
+    cursor: "pointer",
+    transition: "all 0.2s ease",
   },
 };
