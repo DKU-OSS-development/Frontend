@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: "/",
   plugins: [react()],
   // ▼▼▼ 로컬 개발용 프록시 설정 추가 ▼▼▼
   server: {

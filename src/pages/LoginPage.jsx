@@ -97,12 +97,12 @@ export default function LoginPage() {
         <div className="brand-content">
           <div className="logo-container">
             <img 
-              src="/src/assets/ClaudeLogo.png" 
+              src="/ClaudeLogo.png" 
               alt="Claude AI" 
               className="logo-image"
             />
             <img 
-              src="/src/assets/kubeLogo.png" 
+              src="/kubeLogo.png" 
               alt="Kubernetes" 
               className="logo-image"
             />
