@@ -1,97 +1,63 @@
-import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import BackButton from "../components/BackButton";
 import "./PageLayout.css";
-
-const API_BASE_URL = "/api";
 
 export default function ProjectDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-
-  const [text, setText] = useState("");
-  const [file, setFile] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [project, setProject] = useState(null);
+  const [summaries, setSummaries] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem("oss_token");
-    if (!token) {
-      alert("로그인이 필요합니다.");
-      navigate("/");
+    fetchProjectAndSummaries();
+  }, [id]);
+
+  const fetchProjectAndSummaries = async () => {
+    try {
+      const token = localStorage.getItem("oss_token");
+      
+      // 요약 목록 가져오기
+      const response = await fetch(
+        `/api/${id}/summaries?token=${encodeURIComponent(token)}`
+      );
+      
+      if (!response.ok) throw new Error("요약 목록 로드 실패");
+      
+      const data = await response.json();
+      setProject({ id, name: data.project_name });
+      setSummaries(data.summaries);
+    } catch (error) {
+      console.error("데이터 로드 실패:", error);
+      alert("프로젝트 정보를 불러올 수 없습니다.");
+    } finally {
+      setLoading(false);
     }
-  }, [navigate]);
+  };
+
+  const handleNewSummary = () => {
+    navigate(`/projects/${id}/new`); 
+  };
+
+  const handleViewSummary = (summaryId) => {
+    navigate(`/summary/${summaryId}`);
+  };
 
   const handleLogout = () => {
     localStorage.removeItem("oss_token");
     navigate("/");
   };
 
-  const handleFileChange = (e) => {
-    const selected = e.target.files?.[0];
-    setFile(selected ?? null);
-  };
-
-  const handleSubmit = async () => {
-    if (!text.trim() && !file) {
-      alert("텍스트를 입력하거나 파일을 업로드해주세요.");
-      return;
-    }
-
-    const token = localStorage.getItem("oss_token");
-    if (!token) {
-      alert("로그인이 필요합니다.");
-      navigate("/");
-      return;
-    }
-
-    try {
-      setIsLoading(true);
-
-      const formData = new FormData();
-      formData.append("token", token);
-      
-      if (text.trim()) {
-        formData.append("text", text);
-      }
-      
-      if (file) {
-        formData.append("file", file);
-      }
-
-      const res = await fetch(
-        `${API_BASE_URL}/projects/${id}/summarize`, 
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        alert(`요약 요청 실패: ${data.detail || res.statusText}`);
-        return;
-      }
-
-      const data = await res.json();
-
-      const summaryText =
-        typeof data === "string"
-          ? data
-          : data.summary || JSON.stringify(data, null, 2);
-
-      navigate("/summary", {
-        state: {
-          summary: summaryText,
-          projectId: id,
-        },
-      });
-    } catch (err) {
-      console.error(err);
-      alert("요약 요청 중 오류가 발생했습니다.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  if (loading) {
+    return (
+      <div className="page">
+        <div className="page-body" style={{ textAlign: "center", paddingTop: 100 }}>
+          <p>로딩 중...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="page">
@@ -100,9 +66,9 @@ export default function ProjectDetailPage() {
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <BackButton />
           <div>
-            <div className="page-title">프로젝트 상세</div>
+            <div className="page-title">{project?.name || "프로젝트"}</div>
             <div className="page-subtitle">
-              요약할 텍스트 또는 파일을 업로드하세요
+              이 프로젝트의 요약 히스토리를 확인하고 새로운 요약을 작성할 수 있습니다
             </div>
           </div>
         </div>
@@ -116,59 +82,43 @@ export default function ProjectDetailPage() {
 
       {/* 본문 */}
       <main className="page-body">
-        {/* 텍스트 입력 카드 */}
         <section className="card">
-          <div className="card-title">📝 텍스트 입력</div>
-          <div className="card-subtitle">
-            바로 붙여넣을 수 있는 문서라면 여기에 텍스트로 입력하세요
+          <div style={styles.header}>
+            <h2 style={styles.title}>📋 요약 히스토리</h2>
+            <button className="btn btn-primary btn-md btn-fixed-width" onClick={handleNewSummary}>
+              ➕ 새 요약 작성
+            </button>
           </div>
 
-          <textarea
-            style={styles.textarea}
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder="여기에 요약할 텍스트를 입력하세요..."
-          />
-        </section>
-
-        {/* 파일 업로드 카드 */}
-        <section className="card">
-          <div className="card-title">📎 파일 업로드</div>
-          <div className="card-subtitle">
-            PDF, TXT, DOCX 파일을 업로드하세요
-          </div>
-
-          <div style={styles.fileSection}>
-            <label htmlFor="file-input" style={styles.fileLabel}>
-              <span style={styles.fileLabelIcon}>📁</span>
-              {file ? file.name : "파일 선택"}
-            </label>
-            <input
-              id="file-input"
-              type="file"
-              accept=".pdf,.txt,.doc,.docx"
-              onChange={handleFileChange}
-              style={styles.fileInput}
-            />
-            {file && (
-              <button
-                onClick={() => setFile(null)}
-                style={styles.clearButton}
-              >
-                ✕ 취소
-              </button>
-            )}
-          </div>
-             <div className="flex-center" style={{ marginTop: '30px' }}>
-          <button
-            className="btn btn-primary btn-lg btn-block"
-            onClick={handleSubmit}
-            disabled={isLoading}
-            style={{ marginTop: 16 }}
-          >
-            {isLoading ? "⏳ 요약 중..." : "✨ 요약 요청하기"}
-          </button>
-          </div>
+          {summaries.length === 0 ? (
+            <div style={styles.emptyState}>
+              <p style={styles.emptyText}>아직 요약이 없습니다</p>
+              <p style={styles.emptySubtext}>새 요약을 작성해보세요</p>
+            </div>
+          ) : (
+            <div style={styles.summariesList}>
+              {summaries.map((summary) => (
+                <div key={summary.id} style={styles.summaryCard}>
+                  <div style={styles.summaryHeader}>
+                    <span style={styles.summaryDate}>
+                      {new Date(summary.created_at).toLocaleString("ko-KR")}
+                    </span>
+                  </div>
+                  <div style={styles.summaryPreview}>
+                    {summary.summary.substring(0, 150)}
+                    {summary.summary.length > 150 ? "..." : ""}
+                  </div>
+                  <button
+                    className="btn btn-ghost btn-sm"
+                    style={{ marginTop: 12 }}
+                    onClick={() => handleViewSummary(summary.id)}
+                  >
+                    전체 보기 →
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </section>
       </main>
     </div>
@@ -176,62 +126,67 @@ export default function ProjectDetailPage() {
 }
 
 const styles = {
-  textarea: {
-    width: "100%",
-    minHeight: 160,
-    marginTop: 12,
-    padding: 12,
-    boxSizing: "border-box",
-    borderRadius: 8,
-    border: "1px solid #1f2937",
-    background: "#020617",
-    color: "#e5e7eb",
+  header: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 24,
+  },
+
+  title: {
+    margin: 0,
+    fontSize: 20,
+    fontWeight: 600,
+    color: "#f9fafb",
+  },
+
+  emptyState: {
+    textAlign: "center",
+    padding: "60px 20px",
+  },
+
+  emptyText: {
+    fontSize: 16,
+    color: "#9ca3af",
+    margin: "0 0 8px 0",
+  },
+
+  emptySubtext: {
+    fontSize: 14,
+    color: "#6b7280",
+    margin: 0,
+  },
+
+  summariesList: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 16,
+  },
+
+  summaryCard: {
+    background: "#0f172a",
+    border: "1px solid #1e293b",
+    borderRadius: 12,
+    padding: 20,
+    transition: "all 0.2s",
+    cursor: "pointer",
+  },
+
+  summaryHeader: {
+    marginBottom: 12,
+  },
+
+  summaryDate: {
+    fontSize: 13,
+    color: "#64748b",
+    fontWeight: 500,
+  },
+
+  summaryPreview: {
     fontSize: 14,
     lineHeight: 1.6,
-    resize: "vertical",
-    fontFamily: "inherit",
-  },
-
-  fileSection: {
-    display: "flex",
-    gap: 8,
-    marginTop: 12,
-    alignItems: "center",
-  },
-
-  fileInput: {
-    display: "none",
-  },
-
-  fileLabel: {
-    flex: 1,
-    padding: "10px 16px",
-    border: "2px dashed #374151",
-    borderRadius: 8,
-    cursor: "pointer",
-    textAlign: "center",
-    fontSize: 14,
-    color: "#9ca3af",
-    background: "#020617",
-    transition: "all 0.2s ease",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-  },
-
-  fileLabelIcon: {
-    fontSize: 18,
-  },
-
-  clearButton: {
-    padding: "8px 16px",
-    border: "1px solid #374151",
-    borderRadius: 8,
-    background: "#1f2937",
-    color: "#ef4444",
-    fontSize: 13,
-    cursor: "pointer",
-    transition: "all 0.2s ease",
+    color: "#cbd5e1",
+    whiteSpace: "pre-wrap",
+    wordBreak: "break-word",
   },
 };
